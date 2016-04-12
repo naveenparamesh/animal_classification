@@ -31,6 +31,7 @@ void Graph::print(){
    } 
 }
 
+//THIS FUNCTION IS NOT USED AS OF RIGHT NOW
 void Graph::printResults(vector<Species*> results){
    
    for(int i = 0; i < results.size(); i++){
@@ -87,16 +88,9 @@ void Graph::storeInfoInGraph(string theString){
 }
 
 void Graph::optionOne(int num_subtypes, string sp, int order){
-    queue<Species*> my_queue;
-    vector<Species*> results;
-    for(int v = 0; v < subclasses.size(); v++){
-        subclasses.at(v)->state = "undiscovered";
-        subclasses.at(v)->parent = NULL;
-       for(Species* sType = subclasses.at(v)->subtype; sType != NULL; sType = sType->subtype){
-            sType->state = "undiscovered";
-            sType->parent = NULL;
-       }
-   }
+   cout << num_subtypes << " subtypes of " << sp << " of order " << order << " are: " << endl;
+   queue<Species*> my_queue;
+   int num_results = 0;
    int indexOfSource = indexForName(sp);
    Species* source;
    if(indexOfSource != -1){
@@ -107,42 +101,31 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
        return;
    }
    
-   source->state = "discovered";
    source->distance = 0;
    my_queue.push(source);
    
    while(!my_queue.empty()){
        Species* u = my_queue.front(); //dequeue's the species in the front of the line
        my_queue.pop();
-        if(results.size() >= num_subtypes){
+        if(num_results >= num_subtypes){
             break; //breaks out of while so it can print the results
         }
         //process u here
          if(u->distance == order){//if it reached the given order
-            results.push_back(u);
+            cout << u->name << endl;
+            num_results++;
          }
        int indexOfSpecies = indexForName(u->name);
        if(indexOfSpecies != -1){//meaning that species has subclasses
-        //cout << u ->name <<" distance is: " << u->distance << endl;
         Species* start = subclasses.at(indexOfSpecies)->subtype;
          for(Species* v = start; v != NULL; v = v->subtype){
             //process edge (u, v) here
-            //cout << v->name << " is in line" << endl;
-            if (v->state == "undiscovered"){
-                v->state = "discovered";
-                v->parent = u;
                 v->distance = u->distance + 1;
                 my_queue.push(v);
-            }
          }
        }
-       u->state = "processed";
+       //u->state = "processed";
    }//end of while loop
-   
-       
-    //cout << "THE SIZE OF RESULTS IS: " << results.size() << endl;
-    cout << num_subtypes << " subtypes of " << sp << " of order " << order << " are: " << endl;
-    printResults(results);
 }
 
 void Graph::optionTwo(string sp){
