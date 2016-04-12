@@ -1,10 +1,14 @@
-#include "subtype.h"
 #include <string>
+
+using namespace std;
 class Species{
   public:
     string name;
-    Subtype* subtypeList;
-    Species(string name, Subtype* subtypeList);
+    Species* subtype;
+    Species* parent;
+    int distance; // to node 
+    string state;
+    Species(string name, Species* subtype);
   private:
     
 };

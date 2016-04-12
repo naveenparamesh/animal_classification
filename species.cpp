@@ -1,6 +1,6 @@
 #include "species.h"
 
-Species::Species(string name, Subtype* subtypeList){
+Species::Species(string name, Species* subtype){
     this->name = name;
-    this->subtypeList = subtypeList;
+    this->subtype = subtype;
 }

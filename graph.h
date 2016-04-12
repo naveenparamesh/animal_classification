@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <queue>
 #include "species.h"
 
 using namespace std;
@@ -12,7 +13,7 @@ class Graph{
     public:
         // this vector holds a species in each bucket and each species 
         // has a pointer to a subtype, and each subtype has a pointer to another
-        // subtype, thus its basically a adjacency linked list in each bucket 
+        // subtype, thus its basically an adjacency linked list in each bucket 
         // of the vector
         vector<Species*> subclasses; 
         Graph(string file);
@@ -20,7 +21,10 @@ class Graph{
         void print();
         string editFormat(string s);
         void storeInfoInGraph(string theString);
-        
+        void printResults(vector<Species*> results);
+        void optionOne(int num_subtypes, string sp, int order);
+        void optionTwo(string sp);
+        void optionThree(string firstSpecies, string secondSpecies);
     
     private:
     
