@@ -17,14 +17,14 @@ class Graph{
         // of the vector
         vector<Species*> subclasses; 
         Graph(string file);
-        int indexForName(string name);
+        int getIndex(string name);
         void print();
         string editFormat(string s);
         void storeInfoInGraph(string theString);
         void printResults(vector<Species*> results);
         void optionOne(int num_subtypes, string sp, int order);
         void optionTwo(string sp);
-        void optionThree(string firstSpecies, string secondSpecies);
+        void optionThree(string sp1, string sp2, string sp3);
     
     private:
     

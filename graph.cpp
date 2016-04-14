@@ -8,11 +8,9 @@ Graph::Graph(string file){
         if(!getline(infile, s)) break;
         storeInfoInGraph(s);
     }
-    
-    
 }
 
-int Graph::indexForName(string name){
+int Graph::getIndex(string name){
     for(int v = 0; v < subclasses.size(); v++){
         if (subclasses.at(v)->name == name){
             return v;
@@ -53,8 +51,8 @@ string Graph::editFormat(string s){
 	return result;
 }
 
-void Graph::storeInfoInGraph(string theString){
-	istringstream ss(theString);
+void Graph::storeInfoInGraph(string fileLine){
+	istringstream ss(fileLine);
  	string species = "";
  	vector<string> subtypes;
  	
@@ -75,7 +73,7 @@ void Graph::storeInfoInGraph(string theString){
  		}
  	}
  	
- 	int speciesIndex = indexForName(species);
+ 	int speciesIndex = getIndex(species);
  	if(speciesIndex == -1){ //not found within graph so far, so add it
  	    subclasses.push_back(new Species(species, NULL));
  	    speciesIndex = subclasses.size() - 1;
@@ -91,7 +89,7 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
    cout << num_subtypes << " subtypes of " << sp << " of order " << order << " are: " << endl;
    queue<Species*> my_queue;
    int num_results = 0;
-   int indexOfSource = indexForName(sp);
+   int indexOfSource = getIndex(sp);
    Species* source;
    if(indexOfSource != -1){
        source = subclasses.at(indexOfSource);
@@ -115,7 +113,7 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
             cout << u->name << endl;
             num_results++;
          }
-       int indexOfSpecies = indexForName(u->name);
+       int indexOfSpecies = getIndex(u->name);
        if(indexOfSpecies != -1){//meaning that species has subclasses
         Species* start = subclasses.at(indexOfSpecies)->subtype;
          for(Species* v = start; v != NULL; v = v->subtype){
@@ -130,7 +128,7 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
 
 void Graph::optionTwo(string sp){
     queue<Species*> my_queue;
-    int indexOfSource = indexForName(sp);
+    int indexOfSource = getIndex(sp);
     Species* source;
     if(indexOfSource != -1){
         source = subclasses.at(indexOfSource);
@@ -143,7 +141,7 @@ void Graph::optionTwo(string sp){
     while(!my_queue.empty()){
        Species* u = my_queue.front(); //dequeue's the species in the front of the line
        my_queue.pop();
-       int indexOfSpecies = indexForName(u->name);
+       int indexOfSpecies = getIndex(u->name);
        if(indexOfSpecies != -1){//only proceed if it has a subclass
            Species* start = subclasses.at(indexOfSpecies)->subtype;
            for(Species* s = start; s != NULL; s = s->subtype){
@@ -155,8 +153,71 @@ void Graph::optionTwo(string sp){
     }
 }
 
-void Graph::optionThree(string firstSpecies, string secondSpecies){
+void Graph::optionThree(string sp1, string sp2, string sp3){
+    queue<Species*> my_queue;
+    vector<Species*> sp2ANDsp3;
+    int indexOfSource = getIndex(sp1);
+    Species* source;
+    if(indexOfSource != -1){
+        source = subclasses.at(indexOfSource);
+        source->distance = 0;
+        source->visited = false;
+    }
+    else{//has no subtypes
+        cout << "Has no subtypes" << endl;
+        return;
+    }
+    my_queue.push(source);
+    while(!my_queue.empty() && sp2ANDsp3.size() < 2){ // exit if queue is empty, or if both sp2 & sp3 are set, cuz no need for more traversal
+       Species* u = my_queue.front(); //dequeue's the species in the front of the line
+       my_queue.pop();
+      if(u->name == sp2){
+          sp2ANDsp3.push_back(u);
+      }
+      if(u->name == sp3){
+          sp2ANDsp3.push_back(u);
+      }
+       int indexOfSpecies = getIndex(u->name);
+       if(indexOfSpecies != -1){//only proceed if it has a subclass
+           Species* start = subclasses.at(indexOfSpecies)->subtype;
+           for(Species* s = start; s != NULL; s = s->subtype){
+                 s->distance = u->distance + 1;
+                 s->parent = u;
+                 s->visited = false;
+                
+                my_queue.push(s);
+           }
+       }
+    }
+    bool lca_found = false;
+    //sp2ANDsp3.at(0) = sp2ANDsp3.at(0)->parent;
+    //cout << "That line actually passed" << endl;
+    //cout << "sp2's parent is: " << sp2ANDsp3.at(0)->name << endl;
+    while(!lca_found){
+        if(sp2ANDsp3.at(0)->name != source->name){
+            sp2ANDsp3.at(0)->visited = true;
+            sp2ANDsp3.at(0) = sp2ANDsp3.at(0)->parent;    
+        }
+        if(sp2ANDsp3.at(1)->name != source->name){
+            sp2ANDsp3.at(1)->visited = true;
+            sp2ANDsp3.at(1) = sp2ANDsp3.at(1)->parent;    
+        }
+        if(sp2ANDsp3.at(0)->visited){//this is lca
+            lca_found = true;
+            cout << "Lowest Common Ancestor is: " << sp2ANDsp3.at(0)->name << endl;
+        }
+        else if(sp2ANDsp3.at(1)->visited){
+            lca_found = true;
+            cout << "Lowest Common Ancestor is: " << sp2ANDsp3.at(1)->name << endl;
+        }
+        else if(sp2ANDsp3.at(0)->name == sp2ANDsp3.at(1)->name){
+            lca_found = true;
+            cout << "Lowest Common Ancestor is: " << sp2ANDsp3.at(0)->name << endl;
+        }
+        
+    }
+    
+    
+    
     
 }
-
-

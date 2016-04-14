@@ -23,7 +23,8 @@ int main(){
     int choice = 0;
     string species_name = "";
     int order_num = 0;
-    string other_name = "";
+    string sp2 = "";
+    string sp3 = "";
     int numSubTypes = 0;
     
     cout << "Enter 1, 2, or 3 to continue: " << endl;
@@ -74,17 +75,15 @@ int main(){
                 }
                 species_name = graph->editFormat(species_name);
                 
-                while (getline(cin, other_name))
-                {
-                     if (other_name == ""){
-                        cout << "Enter the second species (string): " << endl;
-                    }
-                    else {
-                        break;
-                    }
-                }
-                other_name = graph->editFormat(other_name);
-                graph->optionThree(species_name, other_name);
+                cout << "Enter the second species (string): " << endl;
+                getline(cin, sp2);
+                sp2 = graph->editFormat(sp2);
+              
+                cout << "Enter the third species (string): " << endl;
+                getline(cin, sp3);
+                sp3 = graph->editFormat(sp3);
+                
+                graph->optionThree(species_name, sp2, sp3);
                 break;
         default: cout << "Invalid input!" << endl;
                 break;

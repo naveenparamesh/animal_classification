@@ -6,8 +6,9 @@ class Species{
     string name;
     Species* subtype;
     Species* parent;
+    bool visited;
     int distance; // to node 
-    string state;
+    string state;// discovered/ undiscovered
     Species(string name, Species* subtype);
   private:
     

@@ -10,7 +10,7 @@ Living being: Protozoa, bacteria, chromista, plantae, fungi, animalia
 animalia: Choanoflagellata, Animal, Ctenophora, Porifera, Placozoa, Cnidaria, Bilateria, vertebrates
 vertebrates: fish, amphibian, reptile, bird, mammal
 Mammal: eutherian, fossorial, metatherian, placental, prototherian, tusker
-placental:  carnivore, herbivore
+placental: carnivore, herbivore
 Carnivore: felidae, canidae
 Herbivore: equidae,  quagga, lemuridae, dugongidae
 Equidae: horse, donkey, zebra, Hyracotherium, mule
