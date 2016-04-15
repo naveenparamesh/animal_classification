@@ -22,7 +22,7 @@ int Graph::getIndex(string name){
 void Graph::print(){
  for(int v = 0; v < subclasses.size(); v++){
        cout << subclasses.at(v)->name; // list the species name
-       for(Species* sType = subclasses.at(v)->subtype; sType != NULL; sType = sType->subtype){
+       for(Species* sType = subclasses.at(v)->next; sType != NULL; sType = sType->next){
            cout << " --> " << sType->name;
        }
        cout << endl;
@@ -80,7 +80,7 @@ void Graph::storeInfoInGraph(string fileLine){
  	}
  	
  	for(int i = 0; i < subtypes.size(); i++){
- 	    subclasses.at(speciesIndex)->subtype = new Species(subtypes.at(i), subclasses.at(speciesIndex)->subtype);
+ 	    subclasses.at(speciesIndex)->next = new Species(subtypes.at(i), subclasses.at(speciesIndex)->next);
  	}
  	
 }
@@ -115,8 +115,8 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
          }
        int indexOfSpecies = getIndex(u->name);
        if(indexOfSpecies != -1){//meaning that species has subclasses
-        Species* start = subclasses.at(indexOfSpecies)->subtype;
-         for(Species* v = start; v != NULL; v = v->subtype){
+        Species* start = subclasses.at(indexOfSpecies)->next;
+         for(Species* v = start; v != NULL; v = v->next){
             //process edge (u, v) here
                 v->distance = u->distance + 1;
                 my_queue.push(v);
@@ -128,6 +128,7 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
 
 void Graph::optionTwo(string sp){
     queue<Species*> my_queue;
+    int num_subSpecies = 0;
     int indexOfSource = getIndex(sp);
     Species* source;
     if(indexOfSource != -1){
@@ -143,14 +144,15 @@ void Graph::optionTwo(string sp){
        my_queue.pop();
        int indexOfSpecies = getIndex(u->name);
        if(indexOfSpecies != -1){//only proceed if it has a subclass
-           Species* start = subclasses.at(indexOfSpecies)->subtype;
-           for(Species* s = start; s != NULL; s = s->subtype){
-            cout << s->name << endl;
+           Species* start = subclasses.at(indexOfSpecies)->next;
+           for(Species* s = start; s != NULL; s = s->next){
+            num_subSpecies++;
             my_queue.push(s);
            }
        }
-       
     }
+    
+    cout << "The number os Subspecies for " << sp << " is: " << num_subSpecies << endl;
 }
 
 void Graph::optionThree(string sp1, string sp2, string sp3){
@@ -179,8 +181,8 @@ void Graph::optionThree(string sp1, string sp2, string sp3){
       }
        int indexOfSpecies = getIndex(u->name);
        if(indexOfSpecies != -1){//only proceed if it has a subclass
-           Species* start = subclasses.at(indexOfSpecies)->subtype;
-           for(Species* s = start; s != NULL; s = s->subtype){
+           Species* start = subclasses.at(indexOfSpecies)->next;
+           for(Species* s = start; s != NULL; s = s->next){
                  s->distance = u->distance + 1;
                  s->parent = u;
                  s->visited = false;
@@ -188,6 +190,10 @@ void Graph::optionThree(string sp1, string sp2, string sp3){
                 my_queue.push(s);
            }
        }
+    }
+    if(sp2ANDsp3.size() < 2){ // meant that sp1 was lower in the heirachy than either sp2 or sp3 or both
+        cout << "Sorry, next time make sure SP1 is higher up in the classification heirachy than SP2 and SP3" << endl;
+        return;
     }
     bool lca_found = false;
     //sp2ANDsp3.at(0) = sp2ANDsp3.at(0)->parent;
@@ -200,6 +206,7 @@ void Graph::optionThree(string sp1, string sp2, string sp3){
         }
         if(sp2ANDsp3.at(1)->name != source->name){
             sp2ANDsp3.at(1)->visited = true;
+            
             sp2ANDsp3.at(1) = sp2ANDsp3.at(1)->parent;    
         }
         if(sp2ANDsp3.at(0)->visited){//this is lca
