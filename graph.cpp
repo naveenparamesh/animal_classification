@@ -1,5 +1,10 @@
 #include "graph.h"
 
+// graph constructor takes in the file name and reads each line of the file
+// into a string s using a input file stream. Then the line of each file gets 
+// passed to the function storeInfoInGraph so that it can dissect each line and 
+// get the species and subspecies properly and store them in the graph
+// so that in the end the graph can represent a structure such of an adjaceny linked list
 Graph::Graph(string file){
     ifstream infile(file.c_str());
     
@@ -10,6 +15,10 @@ Graph::Graph(string file){
     }
 }
 
+// since each species is the head of the linked list in each index of the vector,
+// this function goes through each index checking if the given species name is actually
+// contained within the vector, if it is, it returns the index at which the species is located in the vector
+// else it just returns -1 indicating its not located in the vector at all
 int Graph::getIndex(string name){
     for(int v = 0; v < subclasses.size(); v++){
         if (subclasses.at(v)->name == name){
@@ -19,6 +28,8 @@ int Graph::getIndex(string name){
     return -1;
 }
 
+// this function was only used in the developmental stages and was used to test whether
+// the graph was correctly formed
 void Graph::print(){
  for(int v = 0; v < subclasses.size(); v++){
        cout << subclasses.at(v)->name; // list the species name
@@ -29,15 +40,9 @@ void Graph::print(){
    } 
 }
 
-//THIS FUNCTION IS NOT USED AS OF RIGHT NOW
-void Graph::printResults(vector<Species*> results){
-   
-   for(int i = 0; i < results.size(); i++){
-       cout << results.at(i)->name << endl;
-   }
-   cout << endl;
-}
-
+// This function takes in a string and returns a string that is modified
+// meaning "RED ApPLE" becomes "red_apple" because every letter is lower cased
+// and every space is replaced with an underscore
 string Graph::editFormat(string s){
 	string result = "";
 	for(int i = 0; i < s.length(); i++){
@@ -51,35 +56,44 @@ string Graph::editFormat(string s){
 	return result;
 }
 
+// this function is the bulk of how information is stored in the graph, using the underlying 
+// adjaceny linked list data structure(formed using a vector and the species class)
+// it takes in a line from a file, and iterates through it using an input string stream variable
+// the istringstream variable iterates through recording characters until the given delimeter
+// is given such as ":" or ";" and then stores the recorded characters into s, which then get used to store
+// the species and even the subtypes. Later using this data the species and subtypes are added to the graph
 void Graph::storeInfoInGraph(string fileLine){
 	istringstream ss(fileLine);
  	string species = "";
- 	vector<string> subtypes;
+ 	vector<string> subtypes; // holds subtype of each species
  	
- 	while(ss){
+ 	while(ss){ // while there is still more to read from the line
  		string s = "";
  		
- 		if(getline(ss, s, ':')){
- 			s = editFormat(s);
-	 		species = s;
-	 		s = "" ;
+ 		if(getline(ss, s, ':')){ // gets the species name basically and store in s
+ 			s = editFormat(s); // properly formats it
+	 		species = s; // sets to species
+	 		s = "" ; // clears s for later use
  		}
  		while(true){
-	 		if(!getline(ss, s, ',')) break;		
-	 		s = s.substr(1);
+	 		if(!getline(ss, s, ',')) break; // if there is no more to read from the file exit the loop	
+	 		s = s.substr(1); // strips begining whitespace so " apples" becomes "apples"
 	 		s = editFormat(s);
-		 	subtypes.push_back(s);
+		 	subtypes.push_back(s); // adds a subtype of the species is added to this list 
 		 	s = "";
  		}
  	}
  	
- 	int speciesIndex = getIndex(species);
+ 	int speciesIndex = getIndex(species); // gets the index of the species in the vector
  	if(speciesIndex == -1){ //not found within graph so far, so add it
- 	    subclasses.push_back(new Species(species, NULL));
- 	    speciesIndex = subclasses.size() - 1;
+ 	    subclasses.push_back(new Species(species, NULL)); // adds this species, setting the rest of the linked list to null
+ 	    speciesIndex = subclasses.size() - 1; // sets the variable keeping track of where its gets added for later use
  	}
  	
- 	for(int i = 0; i < subtypes.size(); i++){
+ 	// iterates through list of subtypes and adds each subtype onto the front of the linked list
+ 	// in that index of the vector. So basically it adds a new species(subspecies) in front of the species(head node)
+ 	// and sets this new species'(that was just added) next attribute to point to whatever the head node (the species itself) was pointing to
+ 	for(int i = 0; i < subtypes.size(); i++){ 
  	    subclasses.at(speciesIndex)->next = new Species(subtypes.at(i), subclasses.at(speciesIndex)->next);
  	}
  	
