@@ -99,6 +99,10 @@ void Graph::storeInfoInGraph(string fileLine){
  	
 }
 
+// this task works on finding the number of given subspecies of a given species(sp) of 
+// a given order. After finding the location of the species in the vector, it sets its distance to 0 and pushes it onto the queue
+// it then uses bfs to go through the children of the given species and its children and so on until it gets to a certain order and 
+// displays that species, if it didn't already reach the number of given subtypes allowed to be displayed
 void Graph::optionOne(int num_subtypes, string sp, int order){
    cout << num_subtypes << " subtypes of " << sp << " of order " << order << " are: " << endl;
    queue<Species*> my_queue;
@@ -124,22 +128,26 @@ void Graph::optionOne(int num_subtypes, string sp, int order){
         }
         //process u here
          if(u->distance == order){//if it reached the given order
-            cout << u->name << endl;
-            num_results++;
+            cout << u->name << endl; // display name
+            num_results++; // increment the amount of subtypes displayed
          }
        int indexOfSpecies = getIndex(u->name);
        if(indexOfSpecies != -1){//meaning that species has subclasses
         Species* start = subclasses.at(indexOfSpecies)->next;
          for(Species* v = start; v != NULL; v = v->next){
             //process edge (u, v) here
-                v->distance = u->distance + 1;
-                my_queue.push(v);
+                v->distance = u->distance + 1; // updates the children's distance
+                my_queue.push(v); //pushing into queue for later use
          }
        }
-       //u->state = "processed";
    }//end of while loop
 }
 
+// given a species sp, this function returns the number of total subspecies that
+// given species sp has, whether its direct children of, or grandchildren, or descendants
+// uses BFS same as above, but whenever a subtype is reached, it increments a counter that 
+// keeps track of the number of subtypes reached, and that number is then just displayed at the 
+// end
 void Graph::optionTwo(string sp){
     queue<Species*> my_queue;
     int num_subSpecies = 0;
@@ -169,12 +177,16 @@ void Graph::optionTwo(string sp){
     cout << "The number is Subspecies for " << sp << " is: " << num_subSpecies << endl;
 }
 
+// This function takes a species sp1, which it starts from, then tries to find 
+// the lowest common ancestor of sp2 and sp3 starting from sp1
+// it goes from top to bottom, making a path and updating attributes like parent and visited do it 
+// can use that information later to climb back up to find the lowest common ancestor
 void Graph::optionThree(string sp1, string sp2, string sp3){
     queue<Species*> my_queue;
     vector<Species*> sp2ANDsp3;
     int indexOfSource = getIndex(sp1);
     Species* source;
-    if(indexOfSource != -1){
+    if(indexOfSource != -1){ // if sp1 didn't have any subtypes just exit saying so
         source = subclasses.at(indexOfSource);
         source->distance = 0;
         source->visited = false;
@@ -187,7 +199,7 @@ void Graph::optionThree(string sp1, string sp2, string sp3){
     while(!my_queue.empty() && sp2ANDsp3.size() < 2){ // exit if queue is empty, or if both sp2 & sp3 are set, cuz no need for more traversal
        Species* u = my_queue.front(); //dequeue's the species in the front of the line
        my_queue.pop();
-      if(u->name == sp2){
+      if(u->name == sp2){ // add that species onto the list
           sp2ANDsp3.push_back(u);
       }
       if(u->name == sp3){
@@ -197,9 +209,9 @@ void Graph::optionThree(string sp1, string sp2, string sp3){
        if(indexOfSpecies != -1){//only proceed if it has a subclass
            Species* start = subclasses.at(indexOfSpecies)->next;
            for(Species* s = start; s != NULL; s = s->next){
-                 s->distance = u->distance + 1;
-                 s->parent = u;
-                 s->visited = false;
+                 s->distance = u->distance + 1; // good practice
+                 s->parent = u; // needed for later use
+                 s->visited = false; // used as a flag for later use
                 
                 my_queue.push(s);
            }
@@ -210,9 +222,16 @@ void Graph::optionThree(string sp1, string sp2, string sp3){
         return;
     }
     bool lca_found = false;
-    //sp2ANDsp3.at(0) = sp2ANDsp3.at(0)->parent;
-    //cout << "That line actually passed" << endl;
-    //cout << "sp2's parent is: " << sp2ANDsp3.at(0)->name << endl;
+    // this while loop says makes sp2(sp2ANDsp3.at(0)) and sp3(sp2ANDsp3.at(1))
+    // climb upwards in the heiarchy using the parent attribute and whenever a
+    // species is reached that's flagged with the visited attribute being true
+    // then we know we reached a lowest common ancestor. This is because if sp2 and sp3
+    // are on different levels of the heiarchy then whenever they move upwards, they mark the species
+    // they were just at with visited=true, meaning if sp3 for example was lower in the heiarchy and after going up 
+    // a level reached a species that was already visited, then the algorithm knows sp2 was already there, thus
+    // that species is the lowest common ancestor. Another way to indicate a lca is comparing if sp2 = sp3. Also, if either sp2 
+    // or sp3 reaches sp1, they are not allowed to go up any further, allowing the other species to still climb and find potential
+    // lca's, else the lca could just be sp1 itself
     while(!lca_found){
         if(sp2ANDsp3.at(0)->name != source->name){
             sp2ANDsp3.at(0)->visited = true;
