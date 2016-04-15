@@ -217,8 +217,10 @@ void Graph::optionThree(string sp1, string sp2, string sp3){
            }
        }
     }
+    cout << "the vector has: " << sp2ANDsp3.size() << endl;
     if(sp2ANDsp3.size() < 2){ // meant that sp1 was lower in the heirachy than either sp2 or sp3 or both
         cout << "Sorry, next time make sure SP1 is higher up in the classification heirachy than SP2 and SP3" << endl;
+        cout << "Or enter in a valid species name" << endl;
         return;
     }
     bool lca_found = false;
