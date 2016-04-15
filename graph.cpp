@@ -152,7 +152,7 @@ void Graph::optionTwo(string sp){
        }
     }
     
-    cout << "The number os Subspecies for " << sp << " is: " << num_subSpecies << endl;
+    cout << "The number is Subspecies for " << sp << " is: " << num_subSpecies << endl;
 }
 
 void Graph::optionThree(string sp1, string sp2, string sp3){
